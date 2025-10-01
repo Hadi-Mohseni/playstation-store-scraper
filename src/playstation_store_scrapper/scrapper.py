@@ -108,8 +108,8 @@ def _get_editions(soup: BeautifulSoup) -> list:
 
         title = a.find("h3").text
         price_detail = meta["productDetail"][0]["productPriceDetail"][0]
-        original_price = price_detail["originalPriceValue"]
-        discount_price = price_detail["discountPriceValue"]
+        original_price = price_detail["originalPriceFormatted"]
+        discount_price = price_detail["discountPriceFormatted"]
         currency = price_detail["priceCurrencyCode"]
         editions.append(
             {
