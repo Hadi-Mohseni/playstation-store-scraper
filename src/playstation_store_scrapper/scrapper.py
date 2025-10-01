@@ -1,6 +1,7 @@
 from typing import Literal
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
+import ast
 
 REGIONS = ["en", "en-tr"]
 REGION = Literal["en", "en-tr"]
@@ -32,6 +33,31 @@ def _get_list_url(region: REGION, page: int) -> str:
         return f"{BASE_URL}/{region}/pages/browse/{page}"
 
 
+def _get_retrieve_url(concept_id: str, region: REGION) -> str:
+    """
+    Generate the URL for retrieving a specific game concept on the PlayStation Store.
+
+    This function constructs the URL for fetching detailed information about a game
+    concept based on the provided game ID and region.
+
+    Parameters
+    ----------
+    region : REGION
+        The region code ("en" or "en-tr").
+    concept_id : str
+        he unique identifier for the game.
+
+    Returns
+    -------
+    str
+        The generated URL.
+    """
+    if region == "en":
+        return f"{BASE_URL}/en-tr/concept/{concept_id}"
+    else:
+        return f"{BASE_URL}/{region}/en-tr/concept/{concept_id}"
+
+
 def _request(url: str) -> BeautifulSoup:
     """
     _request Make a request to the provided URL and return the BeautifulSoup object.
@@ -47,6 +73,52 @@ def _request(url: str) -> BeautifulSoup:
         The parsed HTML content.
     """
     return BeautifulSoup(urlopen(url).read().decode("utf-8"), "html.parser")
+
+
+def _get_editions(soup: BeautifulSoup):
+    articles = soup.find_all("article")
+    editions = []
+    for a in articles:
+        meta = a.find("button").get("data-telemetry-meta")
+        meta = meta.replace("false", "False")
+        meta = meta.replace("true", "True")
+        meta = meta.replace("null", "None")
+        meta = ast.literal_eval(meta)
+        if meta["ctaSubType"] != "add_to_cart":
+            continue
+
+        title = a.find("h3").text
+        price_detail = meta["productDetail"][0]["productPriceDetail"][0]
+        original_price = price_detail["originalPriceValue"]
+        discount_price = price_detail["discountPriceValue"]
+        currency = price_detail["priceCurrencyCode"]
+        editions.append(
+            {
+                "title": title,
+                "original_price": original_price,
+                "discount_price": discount_price,
+                "currency": currency,
+            }
+        )
+
+    return editions
+
+
+def _scrap_retrieve(soup: BeautifulSoup):
+    title = soup.find("h1").text
+    pltfrm = soup.find("dd", {"data-qa": "gameInfo#releaseInformation#platform-value"})
+    rd = soup.find("dd", {"data-qa": "gameInfo#releaseInformation#releaseDate-value"})
+    pblshr = soup.find("dd", {"data-qa": "gameInfo#releaseInformation#publisher-value"})
+    genres = soup.find("dd", {"data-qa": "gameInfo#releaseInformation#genre-value"})
+    editions = _get_editions(soup)
+    return {
+        "title": title,
+        "platforms": pltfrm,
+        "release_data": rd,
+        "publisher": pblshr,
+        "genres": genres,
+        "editions": editions,
+    }
 
 
 def list_games(region: REGION = "en", page: int = 1) -> tuple:
@@ -90,3 +162,11 @@ def list_games(region: REGION = "en", page: int = 1) -> tuple:
         for c in cards
     ]
     return games, page, last_page
+
+
+def retrieve_game(concept_id: str, region: REGION = "en"):
+    if region not in REGIONS:
+        raise RegionInvalidError
+    url = _get_retrieve_url(concept_id, region)
+    soup = _request(url)
+    return _scrap_retrieve(soup)
