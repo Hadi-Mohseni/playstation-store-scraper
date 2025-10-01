@@ -43,6 +43,9 @@ class TestList:
     def test_list(self):
         assert scrapper.list_games() is not None, "list games returns None"
 
+    def test_list_with_other_region(self):
+        assert scrapper.list_games("en-tr") is not None, "list games returns None"
+
     def test_invalid_region(self):
         with pytest.raises(scrapper.RegionInvalidError):
             scrapper.list_games(region="xyz")
