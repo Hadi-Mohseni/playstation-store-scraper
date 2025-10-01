@@ -1,6 +1,4 @@
 from src.playstation_store_scrapper import scrapper
-from .fixture import successful_list_response
-from urllib.request import HTTPError
 from bs4 import BeautifulSoup
 import pytest
 
@@ -46,9 +44,9 @@ class TestList:
         assert scrapper.list_games() is not None, "list games returns None"
 
     def test_invalid_region(self):
-        with pytest.raises(HTTPError):
+        with pytest.raises(scrapper.RegionInvalidError):
             scrapper.list_games(region="xyz")
 
     def test_scrapping(self, monkeypatch):
-        monkeypatch.setattr(scrapper, "_request", successful_list_response)
+        monkeypatch.setattr(scrapper, "_request", successful_request)
         assert scrapper.list_games() is not None
