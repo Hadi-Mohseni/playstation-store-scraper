@@ -1,6 +1,7 @@
 from typing import Literal
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
+import ast
 
 REGIONS = ["en", "en-tr"]
 REGION = Literal["en", "en-tr"]
@@ -10,9 +11,9 @@ BASE_URL = "https://store.playstation.com"
 class RegionInvalidError(Exception): ...
 
 
-def _get_url(region: REGION, page: int) -> str:
+def _get_list_url(region: REGION, page: int) -> str:
     """
-    _get_url Generate the URL for the PlayStation Store based on the region and page number.
+    _get_list_url Generate the URL for the PlayStation Store based on the region and page number.
 
     Parameters
     ----------
@@ -32,6 +33,31 @@ def _get_url(region: REGION, page: int) -> str:
         return f"{BASE_URL}/{region}/pages/browse/{page}"
 
 
+def _get_retrieve_url(concept_id: str, region: REGION) -> str:
+    """
+    Generate the URL for retrieving a specific game concept on the PlayStation Store.
+
+    This function constructs the URL for fetching detailed information about a game
+    concept based on the provided game ID and region.
+
+    Parameters
+    ----------
+    region : REGION
+        The region code ("en" or "en-tr").
+    concept_id : str
+        he unique identifier for the game.
+
+    Returns
+    -------
+    str
+        The generated URL.
+    """
+    if region == "en":
+        return f"{BASE_URL}/en-tr/concept/{concept_id}"
+    else:
+        return f"{BASE_URL}/{region}/en-tr/concept/{concept_id}"
+
+
 def _request(url: str) -> BeautifulSoup:
     """
     _request Make a request to the provided URL and return the BeautifulSoup object.
@@ -47,6 +73,107 @@ def _request(url: str) -> BeautifulSoup:
         The parsed HTML content.
     """
     return BeautifulSoup(urlopen(url).read().decode("utf-8"), "html.parser")
+
+
+def _get_editions(soup: BeautifulSoup) -> list:
+    """
+    Extract edition information from the BeautifulSoup object.
+
+    Parameters
+    ----------
+    soup : BeautifulSoup
+        The parsed HTML content representing the game page.
+
+    Returns
+    -------
+    list
+        A list of dictionaries, each containing edition-specific information.
+
+    Each dictionary in the list has the following keys:
+        - "title" (str): The title of the edition.
+        - "original_price" (float): The original price of the edition.
+        - "discount_price" (float): The discounted price of the edition.
+        - "currency" (str): The currency code for the price.
+    """
+    articles = soup.find_all("article")
+    editions = []
+    for a in articles:
+        meta = a.find("button").get("data-telemetry-meta")
+        meta = meta.replace("false", "False")
+        meta = meta.replace("true", "True")
+        meta = meta.replace("null", "None")
+        meta = ast.literal_eval(meta)
+        if meta["ctaSubType"] != "add_to_cart":
+            continue
+
+        title = a.find("h3").text
+        price_detail = meta["productDetail"][0]["productPriceDetail"][0]
+        original_price = price_detail["originalPriceFormatted"]
+        discount_price = price_detail["discountPriceFormatted"]
+        currency = price_detail["priceCurrencyCode"]
+        editions.append(
+            {
+                "title": title,
+                "original_price": original_price,
+                "discount_price": discount_price,
+                "currency": currency,
+            }
+        )
+
+    return editions
+
+
+def _scrap_retrieve(soup: BeautifulSoup) -> dict:
+    """
+    Extract detailed information about a game from the BeautifulSoup object.
+
+    Parameters
+    ----------
+    soup : BeautifulSoup
+        The parsed HTML content representing the game page.
+
+    Returns
+    -------
+    dict
+        A dictionary containing detailed information about the game.
+
+    Keys in the returned dictionary:
+        - "title" (str): The full title of the game.
+        - "platforms" (str): The platforms the game is available on.
+        - "release_date" (str): The release date of the game.
+        - "publisher" (str): The publisher of the game.
+        - "genres" (str): The genres the game belongs to.
+        - "editions" (list): A list of dictionaries containing edition-specific information.
+
+    Each edition dictionary contains:
+        - "title" (str): The title of the edition.
+        - "original_price" (float): The original price of the edition.
+        - "discount_price" (float): The discounted price of the edition.
+        - "currency" (str): The currency code for the price.
+
+    """
+    title = soup.find("h1").text
+    pltfrm = soup.find(
+        "dd", {"data-qa": "gameInfo#releaseInformation#platform-value"}
+    ).text
+    rd = soup.find(
+        "dd", {"data-qa": "gameInfo#releaseInformation#releaseDate-value"}
+    ).text
+    pblshr = soup.find(
+        "dd", {"data-qa": "gameInfo#releaseInformation#publisher-value"}
+    ).text
+    genres = soup.find(
+        "dd", {"data-qa": "gameInfo#releaseInformation#genre-value"}
+    ).text
+    editions = _get_editions(soup)
+    return {
+        "title": title,
+        "platforms": pltfrm,
+        "release_date": rd,
+        "publisher": pblshr,
+        "genres": genres,
+        "editions": editions,
+    }
 
 
 def list_games(region: REGION = "en", page: int = 1) -> tuple:
@@ -76,7 +203,7 @@ def list_games(region: REGION = "en", page: int = 1) -> tuple:
     if region not in REGIONS:
         raise RegionInvalidError
 
-    url = _get_url(region, page)
+    url = _get_list_url(region, page)
     soup = _request(url)
     last_page = int(soup.find("ol").find_all("span")[-1].text)
     cards = soup.find_all("li", class_="psw-l-w-1/2@mobile-s")
@@ -90,3 +217,49 @@ def list_games(region: REGION = "en", page: int = 1) -> tuple:
         for c in cards
     ]
     return games, page, last_page
+
+
+def retrieve_game(concept_id: str, region: REGION = "en") -> dict:
+    """
+    Retrieve detailed information about a specific game concept from the PlayStation Store.
+
+    This function fetches and parses the HTML content for a given game concept ID
+    and region, extracting various pieces of information such as title, platforms,
+    release date, publisher, genres, and available editions.
+
+    Parameters
+    ----------
+    concept_id : str
+        The unique identifier for the game concept.
+    region : REGION, optional
+        The region code ("en" or "en-tr"). by default "en"
+
+    Returns
+    -------
+    dict
+        A dictionary containing detailed information about the game.
+
+    Keys in the returned dictionary:
+        - "title" (str): The full title of the game.
+        - "platforms" (str): The platforms the game is available on.
+        - "release_date" (str): The release date of the game.
+        - "publisher" (str): The publisher of the game.
+        - "genres" (str): The genres the game belongs to.
+        - "editions" (list): A list of dictionaries containing edition-specific information.
+
+    Each edition dictionary contains:
+        - "title" (str): The title of the edition.
+        - "original_price" (float): The original price of the edition.
+        - "discount_price" (float): The discounted price of the edition.
+        - "currency" (str): The currency code for the price.
+
+    Raises
+    ------
+    RegionInvalidError
+        If an invalid region is provided.
+    """
+    if region not in REGIONS:
+        raise RegionInvalidError
+    url = _get_retrieve_url(concept_id, region)
+    soup = _request(url)
+    return _scrap_retrieve(soup)
