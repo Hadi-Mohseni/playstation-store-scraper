@@ -153,15 +153,23 @@ def _scrap_retrieve(soup: BeautifulSoup) -> dict:
 
     """
     title = soup.find("h1").text
-    pltfrm = soup.find("dd", {"data-qa": "gameInfo#releaseInformation#platform-value"})
-    rd = soup.find("dd", {"data-qa": "gameInfo#releaseInformation#releaseDate-value"})
-    pblshr = soup.find("dd", {"data-qa": "gameInfo#releaseInformation#publisher-value"})
-    genres = soup.find("dd", {"data-qa": "gameInfo#releaseInformation#genre-value"})
+    pltfrm = soup.find(
+        "dd", {"data-qa": "gameInfo#releaseInformation#platform-value"}
+    ).text
+    rd = soup.find(
+        "dd", {"data-qa": "gameInfo#releaseInformation#releaseDate-value"}
+    ).text
+    pblshr = soup.find(
+        "dd", {"data-qa": "gameInfo#releaseInformation#publisher-value"}
+    ).text
+    genres = soup.find(
+        "dd", {"data-qa": "gameInfo#releaseInformation#genre-value"}
+    ).text
     editions = _get_editions(soup)
     return {
         "title": title,
         "platforms": pltfrm,
-        "release_data": rd,
+        "release_date": rd,
         "publisher": pblshr,
         "genres": genres,
         "editions": editions,
