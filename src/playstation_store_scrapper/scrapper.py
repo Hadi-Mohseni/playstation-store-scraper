@@ -10,9 +10,9 @@ BASE_URL = "https://store.playstation.com"
 class RegionInvalidError(Exception): ...
 
 
-def _get_url(region: REGION, page: int) -> str:
+def _get_list_url(region: REGION, page: int) -> str:
     """
-    _get_url Generate the URL for the PlayStation Store based on the region and page number.
+    _get_list_url Generate the URL for the PlayStation Store based on the region and page number.
 
     Parameters
     ----------
@@ -76,7 +76,7 @@ def list_games(region: REGION = "en", page: int = 1) -> tuple:
     if region not in REGIONS:
         raise RegionInvalidError
 
-    url = _get_url(region, page)
+    url = _get_list_url(region, page)
     soup = _request(url)
     last_page = int(soup.find("ol").find_all("span")[-1].text)
     cards = soup.find_all("li", class_="psw-l-w-1/2@mobile-s")
