@@ -75,7 +75,26 @@ def _request(url: str) -> BeautifulSoup:
     return BeautifulSoup(urlopen(url).read().decode("utf-8"), "html.parser")
 
 
-def _get_editions(soup: BeautifulSoup):
+def _get_editions(soup: BeautifulSoup) -> list:
+    """
+    Extract edition information from the BeautifulSoup object.
+
+    Parameters
+    ----------
+    soup : BeautifulSoup
+        The parsed HTML content representing the game page.
+
+    Returns
+    -------
+    list
+        A list of dictionaries, each containing edition-specific information.
+
+    Each dictionary in the list has the following keys:
+        - "title" (str): The title of the edition.
+        - "original_price" (float): The original price of the edition.
+        - "discount_price" (float): The discounted price of the edition.
+        - "currency" (str): The currency code for the price.
+    """
     articles = soup.find_all("article")
     editions = []
     for a in articles:
@@ -104,7 +123,35 @@ def _get_editions(soup: BeautifulSoup):
     return editions
 
 
-def _scrap_retrieve(soup: BeautifulSoup):
+def _scrap_retrieve(soup: BeautifulSoup) -> dict:
+    """
+    Extract detailed information about a game from the BeautifulSoup object.
+
+    Parameters
+    ----------
+    soup : BeautifulSoup
+        The parsed HTML content representing the game page.
+
+    Returns
+    -------
+    dict
+        A dictionary containing detailed information about the game.
+
+    Keys in the returned dictionary:
+        - "title" (str): The full title of the game.
+        - "platforms" (str): The platforms the game is available on.
+        - "release_date" (str): The release date of the game.
+        - "publisher" (str): The publisher of the game.
+        - "genres" (str): The genres the game belongs to.
+        - "editions" (list): A list of dictionaries containing edition-specific information.
+
+    Each edition dictionary contains:
+        - "title" (str): The title of the edition.
+        - "original_price" (float): The original price of the edition.
+        - "discount_price" (float): The discounted price of the edition.
+        - "currency" (str): The currency code for the price.
+
+    """
     title = soup.find("h1").text
     pltfrm = soup.find("dd", {"data-qa": "gameInfo#releaseInformation#platform-value"})
     rd = soup.find("dd", {"data-qa": "gameInfo#releaseInformation#releaseDate-value"})
@@ -164,7 +211,45 @@ def list_games(region: REGION = "en", page: int = 1) -> tuple:
     return games, page, last_page
 
 
-def retrieve_game(concept_id: str, region: REGION = "en"):
+def retrieve_game(concept_id: str, region: REGION = "en") -> dict:
+    """
+    Retrieve detailed information about a specific game concept from the PlayStation Store.
+
+    This function fetches and parses the HTML content for a given game concept ID
+    and region, extracting various pieces of information such as title, platforms,
+    release date, publisher, genres, and available editions.
+
+    Parameters
+    ----------
+    concept_id : str
+        The unique identifier for the game concept.
+    region : REGION, optional
+        The region code ("en" or "en-tr"). by default "en"
+
+    Returns
+    -------
+    dict
+        A dictionary containing detailed information about the game.
+
+    Keys in the returned dictionary:
+        - "title" (str): The full title of the game.
+        - "platforms" (str): The platforms the game is available on.
+        - "release_date" (str): The release date of the game.
+        - "publisher" (str): The publisher of the game.
+        - "genres" (str): The genres the game belongs to.
+        - "editions" (list): A list of dictionaries containing edition-specific information.
+
+    Each edition dictionary contains:
+        - "title" (str): The title of the edition.
+        - "original_price" (float): The original price of the edition.
+        - "discount_price" (float): The discounted price of the edition.
+        - "currency" (str): The currency code for the price.
+
+    Raises
+    ------
+    RegionInvalidError
+        If an invalid region is provided.
+    """
     if region not in REGIONS:
         raise RegionInvalidError
     url = _get_retrieve_url(concept_id, region)
