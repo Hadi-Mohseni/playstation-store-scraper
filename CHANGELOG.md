@@ -1,8 +1,14 @@
 # Changelog
 
-## [v0.1.0] - 2023-05-15
+
+## [v0.2.0] - 2025-10-01
 
 ### Features
-- Added region-specific URL generation
+- Scrape and Gather details (e.g. tile, genres, platforms, and more) for a game with given <i>concept ID</i>
+
+
+## [v0.1.0] - 2025-10-01
+
+### Features
 - Implemented game listing functionality
 - Included error handling for invalid regions
