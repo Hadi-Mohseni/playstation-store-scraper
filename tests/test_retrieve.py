@@ -1,4 +1,4 @@
-from playstation_store_scrapper import scraper
+from playstation_store_scraper import scraper
 from bs4 import BeautifulSoup
 import os
 
