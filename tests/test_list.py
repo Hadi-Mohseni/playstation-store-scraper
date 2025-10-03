@@ -1,4 +1,4 @@
-from src.playstation_store_scrapper import scrapper
+from playstation_store_scrapper import scraper
 from bs4 import BeautifulSoup
 import pytest
 
@@ -41,15 +41,15 @@ def successful_request(url: str):
 class TestList:
 
     def test_list(self):
-        assert scrapper.list_games() is not None, "list games returns None"
+        assert scraper.list_games() is not None, "list games returns None"
 
     def test_list_with_other_region(self):
-        assert scrapper.list_games("en-tr") is not None, "list games returns None"
+        assert scraper.list_games("en-tr") is not None, "list games returns None"
 
     def test_invalid_region(self):
-        with pytest.raises(scrapper.RegionInvalidError):
-            scrapper.list_games(region="xyz")
+        with pytest.raises(scraper.RegionInvalidError):
+            scraper.list_games(region="xyz")
 
     def test_scrapping(self, monkeypatch):
-        monkeypatch.setattr(scrapper, "_request", successful_request)
-        assert scrapper.list_games() is not None
+        monkeypatch.setattr(scraper, "_request", successful_request)
+        assert scraper.list_games() is not None
