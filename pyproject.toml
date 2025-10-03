@@ -1,13 +1,13 @@
 [project]
 name = "playstation_store_scrapper"
-version = "0.2.0"
+version = "0.3.0"
 description = "A web scraper for the PlayStation Store that retrieves and lists all available games with details such as title, price, platform, and more."
 authors = [
     {name = "Hadi Mohseni",email = "hadimohseni1996@gmail.com"}
 ]
 license = {text = "MIT license"}
 readme = "README.md"
-requires-python = ">=3.11,<4.0"
+requires-python = ">=3.12,<4.0"
 dependencies = [
     "beautifulsoup4 (>=4.14.2,<5.0.0)"
 ]

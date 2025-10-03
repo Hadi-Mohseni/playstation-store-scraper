@@ -1,4 +1,4 @@
-from src.playstation_store_scrapper import scrapper
+from playstation_store_scrapper import scraper
 from bs4 import BeautifulSoup
 import os
 
@@ -31,69 +31,69 @@ class TestRetrieve:
         """
         Test a real game retrieval and make sure retrieve_game works flawlessly.
         """
-        assert scrapper.retrieve_game("10011898") is not None
+        assert scraper.retrieve_game("10011898") is not None
 
     def test_monkeypatching(self, monkeypatch):
         """
         Test a fake retrieval and make sure retrieve_game works flawlessly.
         """
-        monkeypatch.setattr(scrapper, "_request", successful_request)
-        assert scrapper.retrieve_game("10011898") is not None
+        monkeypatch.setattr(scraper, "_request", successful_request)
+        assert scraper.retrieve_game("10011898") is not None
 
     def test_title(self, monkeypatch):
         """
         Test if title is scrapped correctly.
         """
-        monkeypatch.setattr(scrapper, "_request", successful_request)
-        result = scrapper.retrieve_game("10011898")
+        monkeypatch.setattr(scraper, "_request", successful_request)
+        result = scraper.retrieve_game("10011898")
         assert result["title"] == "EA SPORTS FC™ 26 Standard Edition PS4 & PS5"
 
     def test_platform(self, monkeypatch):
         """
         Test if platform is scrapped correctly.
         """
-        monkeypatch.setattr(scrapper, "_request", successful_request)
-        result = scrapper.retrieve_game("10011898")
+        monkeypatch.setattr(scraper, "_request", successful_request)
+        result = scraper.retrieve_game("10011898")
         assert result["platforms"] == "PS4, PS5"
 
     def test_release_date(self, monkeypatch):
         """
         Test if release date is scrapped correctly.
         """
-        monkeypatch.setattr(scrapper, "_request", successful_request)
-        result = scrapper.retrieve_game("10011898")
+        monkeypatch.setattr(scraper, "_request", successful_request)
+        result = scraper.retrieve_game("10011898")
         assert result["release_date"] == "9/26/2025"
 
     def test_publisher(self, monkeypatch):
         """
         Test if publisher is scrapped correctly.
         """
-        monkeypatch.setattr(scrapper, "_request", successful_request)
-        result = scrapper.retrieve_game("10011898")
+        monkeypatch.setattr(scraper, "_request", successful_request)
+        result = scraper.retrieve_game("10011898")
         assert result["publisher"] == "Electronic Arts Inc"
 
     def test_genres(self, monkeypatch):
         """
         Test if genres is scrapped correctly.
         """
-        monkeypatch.setattr(scrapper, "_request", successful_request)
-        result = scrapper.retrieve_game("10011898")
+        monkeypatch.setattr(scraper, "_request", successful_request)
+        result = scraper.retrieve_game("10011898")
         assert result["genres"] == "Sport"
 
     def test_editions(self, monkeypatch):
         """
         Test if number of editions is correct.
         """
-        monkeypatch.setattr(scrapper, "_request", successful_request)
-        result = scrapper.retrieve_game("10011898")
+        monkeypatch.setattr(scraper, "_request", successful_request)
+        result = scraper.retrieve_game("10011898")
         assert len(result["editions"]) == 2
 
     def test_editions_title(self, monkeypatch):
         """
         Test if editions` title is correct.
         """
-        monkeypatch.setattr(scrapper, "_request", successful_request)
-        result = scrapper.retrieve_game("10011898")
+        monkeypatch.setattr(scraper, "_request", successful_request)
+        result = scraper.retrieve_game("10011898")
         assert result["editions"][0]["title"] == "Standard Edition"
         assert result["editions"][1]["title"] == "Ultimate Edition"
 
@@ -101,8 +101,8 @@ class TestRetrieve:
         """
         Test if editions` title is correct.
         """
-        monkeypatch.setattr(scrapper, "_request", successful_request)
-        result = scrapper.retrieve_game("10011898")
+        monkeypatch.setattr(scraper, "_request", successful_request)
+        result = scraper.retrieve_game("10011898")
         assert result["editions"][0]["title"] == "Standard Edition"
         assert result["editions"][1]["title"] == "Ultimate Edition"
 
@@ -110,8 +110,8 @@ class TestRetrieve:
         """
         Test if editions` price is correct.
         """
-        monkeypatch.setattr(scrapper, "_request", successful_request)
-        result = scrapper.retrieve_game("10011898")
+        monkeypatch.setattr(scraper, "_request", successful_request)
+        result = scraper.retrieve_game("10011898")
         assert result["editions"][0]["original_price"] == "$69.99"
         assert result["editions"][0]["discount_price"] == "$69.99"
         assert result["editions"][1]["original_price"] == "$99.99"
@@ -121,8 +121,8 @@ class TestRetrieve:
         """
         Test if editions` price is correct.
         """
-        monkeypatch.setattr(scrapper, "_request", successful_request)
-        result = scrapper.retrieve_game("10011898")
+        monkeypatch.setattr(scraper, "_request", successful_request)
+        result = scraper.retrieve_game("10011898")
         assert result["editions"][0]["original_price"] == "$69.99"
         assert result["editions"][0]["discount_price"] == "$69.99"
         assert result["editions"][1]["original_price"] == "$99.99"
@@ -132,7 +132,7 @@ class TestRetrieve:
         """
         Test if editions` price is correct.
         """
-        monkeypatch.setattr(scrapper, "_request", successful_request)
-        result = scrapper.retrieve_game("10011898")
+        monkeypatch.setattr(scraper, "_request", successful_request)
+        result = scraper.retrieve_game("10011898")
         assert result["editions"][0]["currency"] == "USD"
         assert result["editions"][1]["currency"] == "USD"
