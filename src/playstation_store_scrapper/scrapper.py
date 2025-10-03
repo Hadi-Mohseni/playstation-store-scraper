@@ -1,24 +1,127 @@
-from typing import Literal
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
+from enum import Enum
 import ast
 
-REGIONS = ["en", "en-tr"]
-REGION = Literal["en", "en-tr"]
+
 BASE_URL = "https://store.playstation.com"
+
+
+class REGION(Enum):
+    ARGENTINA = "es-ar"
+    AUSTRALIA = "en-au"
+    AUSTRIA = "de-at"
+    BAHRAIN_ARABIC = "ar-bh"
+    BAHRAIN_ENGLISH = "en-bh"
+    BELGIUM_FRENCH = "fr-be"
+    BELGIUM_DUTCH = "nl_be"
+    BOLIVIA = "es-bo"
+    BRASIL = "pt-br"
+    BULGARIA = "bg-bg"
+    BULGARIA_ENGLISH = "en-bg"
+    CANADA_ENGLISH = "en-ca"
+    CANADA_FRENCH = "fr-ca"
+    CHILE = "es-cl"
+    COLOMBIA = "es-co"
+    COSTA_RICA = "es-cr"
+    CROATIA_ENGLISH = "en-hr"
+    CROATIA_HRVATSKA = "hr-hr"
+    CYPRUS = "en-cy"
+    CZECH_REPUBLIC = "cz-cz"
+    CZECH_REPUBLIC_ENGLISH = "en-cz"
+    DENMARK = "da-dk"
+    DENMARK_ENGLISH = "en-dk"
+    ECUADOR = "es-ec"
+    EL_SALVADOR = "es-sv"
+    FINLAND_ENGLISH = "en-fi"
+    FINLAND_SUOMI = "fi-fi"
+    FRANCE = "fr-fr"
+    GERMANY_DUTCH = "de-de"
+    GREECE = "el-gr"
+    GREECE_ENGLISH = "en-gr"
+    GUATEMALA = "es-gt"
+    HONDURAS = "es-hn"
+    HONG_KONG = "zs-hans-hk"
+    HONG_KONG_ENGLISH = "en-hk"
+    HUNGARY = "hu-hu"
+    HUNGARY_ENGLISH = "en-hu"
+    ICELAND_ENGLISH = "en-is"
+    INDIA = "en-in"
+    INDONESIA_ENGLISH = "en-id"
+    IRELAND = "en-ie"
+    ISRAEL_ENGLISH = "en-il"
+    ISRAEL = "he-il"
+    ITALY = "it-it"
+    JAPAN = "ja-jp"
+    KOREA = "ko-kr"
+    KUWAIT_ARABIC = "ar-kw"
+    KUWAIT_ENGLISH = "en-kw"
+    LEBANON_ARABIC = "ar-lb"
+    LEBANON_ENGLISH = "en-lb"
+    LUXEMBOURG_DUTCH = "de-lu"
+    LUXEMBOURG_FRENCH = "fr-lu"
+    MALAYSIA_ENGLISH = "en-my"
+    MALTA = "en-mt"
+    MEXICO = "es-mx"
+    NEDERLAND = "nl-nl"
+    NEW_ZEALAND = "en-nz"
+    NICARAGUA = "es-ni"
+    NORWAY = "no-no"
+    NORWAY_ENGLISH = "en-no"
+    OMAN_ARABIC = "ar-om"
+    OMAN_ENGLISH = "en-om"
+    PANAMA = "es-pa"
+    PARAGUAY = "es-py"
+    PERU = "es-pe"
+    PHILIPPINES_ENGLISH = "en-ph"
+    POLAND = "pl-pl"
+    POLAND_ENGLISH = "en-pl"
+    PORTUGAL = "pt-pt"
+    QATAR_ARABIC = "ar-qa"
+    QATAR_ENGLISH = "en-qa"
+    ROMANIA = "ro-ro"
+    ROMANIA_ENGLISH = "en-ro"
+    RUSSIA = "ru-ru"
+    SAUDI_ARABIA = "ar-sa"
+    SAUDI_ARABIA_ENGLISH = "en-sa"
+    SERBIA = "sr-sr"
+    SINGAPORE_ENGLISH = "en-sg"
+    SLOVENIA = "sl-si"
+    SLOVENIA_ENGLISH = "en-si"
+    SLOVAKIA = "sk-sk"
+    SLOVAKIA_ENGLISH = "en-sk"
+    SOUTH_AFRICA = "en-za"
+    SPAIN = "es-es"
+    SWEDEN = "sv-se"
+    SWEDEN_ENGLISH = "en-se"
+    SWITZERLAND_DUTCH = "de-ch"
+    SWITZERLAND_FRENCH = "fr-ch"
+    SWITZERLAND_ITALIAN = "it-ch"
+    TAIWAN = "zh-hant-tw"
+    TAIWAN_ENGLISH = "en-tw"
+    THAILAND = "th-th"
+    THAILAND_ENGLISH = "en-th"
+    TURKEY = "tr-tr"
+    TURKEY_ENGLISH = "en-tr"
+    UKRAINE = "ru-ua"
+    UAE_ARABIC = "ar-ae"
+    UAE_ENGLISH = "en-ae"
+    USA = "en-us"
+    UNITED_KINGDOM = "en-gb"
+    URUGUAY = "es-uy"
+    VIETNAM_ENGLISH = "en-vn"
 
 
 class RegionInvalidError(Exception): ...
 
 
-def _get_list_url(region: REGION, page: int) -> str:
+def _get_list_url(region: REGION = REGION.USA, page: int = 1) -> str:
     """
     _get_list_url Generate the URL for the PlayStation Store based on the region and page number.
 
     Parameters
     ----------
-    region : REGION
-        The region code ("en" or "en-tr").
+    region : REGION, optional
     page : int
         The page number.
 
@@ -27,13 +130,10 @@ def _get_list_url(region: REGION, page: int) -> str:
     str
         The generated URL.
     """
-    if region == "en":
-        return f"{BASE_URL}/pages/browse/{page}"
-    else:
-        return f"{BASE_URL}/{region}/pages/browse/{page}"
+    return f"{BASE_URL}/{region.value}/pages/browse/{page}"
 
 
-def _get_retrieve_url(concept_id: str, region: REGION) -> str:
+def _get_retrieve_url(concept_id: str, region: REGION = REGION.USA) -> str:
     """
     Generate the URL for retrieving a specific game concept on the PlayStation Store.
 
@@ -42,8 +142,7 @@ def _get_retrieve_url(concept_id: str, region: REGION) -> str:
 
     Parameters
     ----------
-    region : REGION
-        The region code ("en" or "en-tr").
+    region : REGION, optional
     concept_id : str
         he unique identifier for the game.
 
@@ -52,10 +151,7 @@ def _get_retrieve_url(concept_id: str, region: REGION) -> str:
     str
         The generated URL.
     """
-    if region == "en":
-        return f"{BASE_URL}/en-tr/concept/{concept_id}"
-    else:
-        return f"{BASE_URL}/{region}/en-tr/concept/{concept_id}"
+    return f"{BASE_URL}/{region.value}/en-tr/concept/{concept_id}"
 
 
 def _request(url: str) -> BeautifulSoup:
@@ -176,14 +272,13 @@ def _scrap_retrieve(soup: BeautifulSoup) -> dict:
     }
 
 
-def list_games(region: REGION = "en", page: int = 1) -> tuple:
+def list_games(region: REGION = REGION.USA, page: int = 1) -> tuple:
     """
     list_games List games available on the PlayStation Store for the specified region and page.
 
     Parameters
     ----------
     region : REGION, optional
-        The region code ("en" or "en-tr"), by default "en"
     page : int, optional
         The page number, by default 1
 
@@ -200,7 +295,7 @@ def list_games(region: REGION = "en", page: int = 1) -> tuple:
     RegionInvalidError
         If an invalid region is provided.
     """
-    if region not in REGIONS:
+    if region not in REGION.name:
         raise RegionInvalidError
 
     url = _get_list_url(region, page)
@@ -219,7 +314,7 @@ def list_games(region: REGION = "en", page: int = 1) -> tuple:
     return games, page, last_page
 
 
-def retrieve_game(concept_id: str, region: REGION = "en") -> dict:
+def retrieve_game(concept_id: str, region: REGION = REGION.USA) -> dict:
     """
     Retrieve detailed information about a specific game concept from the PlayStation Store.
 
@@ -232,7 +327,6 @@ def retrieve_game(concept_id: str, region: REGION = "en") -> dict:
     concept_id : str
         The unique identifier for the game concept.
     region : REGION, optional
-        The region code ("en" or "en-tr"). by default "en"
 
     Returns
     -------
@@ -258,7 +352,7 @@ def retrieve_game(concept_id: str, region: REGION = "en") -> dict:
     RegionInvalidError
         If an invalid region is provided.
     """
-    if region not in REGIONS:
+    if region not in REGION:
         raise RegionInvalidError
     url = _get_retrieve_url(concept_id, region)
     soup = _request(url)
