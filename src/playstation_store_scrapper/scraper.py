@@ -151,7 +151,7 @@ def _get_retrieve_url(concept_id: str, region: REGION = REGION.USA) -> str:
     str
         The generated URL.
     """
-    return f"{BASE_URL}/{region.value}/en-tr/concept/{concept_id}"
+    return f"{BASE_URL}/{region.value}/concept/{concept_id}"
 
 
 def _request(url: str) -> BeautifulSoup:
@@ -295,7 +295,7 @@ def list_games(region: REGION = REGION.USA, page: int = 1) -> tuple:
     RegionInvalidError
         If an invalid region is provided.
     """
-    if region not in REGION.name:
+    if region not in REGION:
         raise RegionInvalidError
 
     url = _get_list_url(region, page)
