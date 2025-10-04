@@ -1,0 +1,39 @@
+name: 🌱 Good First Issue
+description: Create a small, beginner-friendly issue for new contributors
+title: "[Good First Issue]: "
+labels: ["good first issue", "needs triage"]
+assignees: []
+
+body:
+    - type: markdown
+      attributes:
+          value: |
+              Thanks for contributing!
+              This form is meant for **small, beginner-friendly issues** — something that helps new contributors get started.
+
+    - type: input
+      id: summary
+      attributes:
+          label: Short Description
+          description: What’s the issue about?
+          placeholder: "Update the README with installation steps"
+      validations:
+          required: true
+
+    - type: textarea
+      id: details
+      attributes:
+          label: Details
+          description: Add more context or what needs to be done.
+          placeholder: "Add the npm install command and prerequisites under the Setup section."
+      validations:
+          required: true
+
+    - type: checkboxes
+      id: terms
+      attributes:
+          label: Code of Conduct
+          description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/Hadi-Mohseni/playstation-store-scraper/blob/main/CODE_OF_CONDUCT.md).
+          options:
+              - label: I agree to follow this project's Code of Conduct
+                required: true

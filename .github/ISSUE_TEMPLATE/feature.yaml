@@ -1,0 +1,58 @@
+name: ✨ Feature Request
+description: Suggest a new feature or improvement for the project
+title: "[Feature]: "
+labels: ["enhancement", "needs triage"]
+assignees: []
+
+body:
+    - type: markdown
+      attributes:
+          value: |
+              Thanks for taking the time to suggest a feature! Please fill out the form below as completely as possible.
+
+    - type: input
+      id: summary
+      attributes:
+          label: Feature Summary
+          description: A short, clear summary of your feature request.
+      validations:
+          required: true
+
+    - type: textarea
+      id: problem
+      attributes:
+          label: Problem Statement
+          description: What problem are you trying to solve with this feature?
+      validations:
+          required: true
+
+    - type: textarea
+      id: proposal
+      attributes:
+          label: Proposed Solution
+          description: Describe the feature or solution you'd like to see implemented.
+          placeholder: "Add a toggle for dark mode in the settings menu."
+      validations:
+          required: true
+
+    - type: dropdown
+      id: priority
+      attributes:
+          label: Priority
+          description: How important is this feature to you or your team?
+          options:
+              - Low
+              - Medium
+              - High
+              - Critical
+      validations:
+          required: false
+
+    - type: checkboxes
+      id: terms
+      attributes:
+          label: Code of Conduct
+          description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/Hadi-Mohseni/playstation-store-scraper/blob/main/CODE_OF_CONDUCT.md).
+          options:
+              - label: I agree to follow this project's Code of Conduct
+                required: true
