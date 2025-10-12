@@ -4,6 +4,7 @@
 <hr>
 <div align='center'>
 # Playstation Store Scrapper 
+
 A web scraper for the PlayStation Store that retrieves and lists all available games with details such as title, price, platform, and more.
 </div>
 
@@ -61,7 +62,6 @@ pip install .
 
 ## Usage
 
-List Games
 Use `scraper.list_games()` to retrieve a group/page of games for a specific region.
 
 ```
@@ -77,7 +77,7 @@ This returns a list of available games with metadata such as:
 3. Platform
 4. Concept ID
 
-Retrieve Game Details
+
 Use scraper.retrieve_game() to fetch complete details about a specific game using its Concept ID.
 ```
 from playstation_store_scraper import scraper
@@ -85,7 +85,8 @@ from playstation_store_scraper.scraper import region
 
 scraper.retrieve_game(concept_id="10011898", region=region.TURKEY_ENGLISH)
 ```
-          Note : You can get a game's concept_id from the results of scraper.list_games().
+
+Note : You can get a game's concept_id from the results of scraper.list_games().
 ---
 
 ## Contributing
@@ -105,5 +106,6 @@ By participating, you agree to uphold these values to ensure a positive, respect
 
 ## License
 
-This project is licensed under the MIT License — see the [MIT License](LICENSE) file for details.
+This project is licensed under the MIT License — 
+see the [MIT License](LICENSE) file for details.
 ---
