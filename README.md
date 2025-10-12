@@ -3,7 +3,7 @@
 
 <hr>
 <div align='center'>
-# Playstation Store Scrapper 
+## Playstation Store Scrapper 
 
 A web scraper for the PlayStation Store that retrieves and lists all available games with details such as title, price, platform, and more.
 </div>
@@ -38,8 +38,8 @@ Follow the steps below to install and start using the scraper.
 
 ###  Prerequisites
 Before installing, make sure you have:
-- **Python 3.8+**
-- **pip** (Python package manager)
+- **Make sure you have python installed and are using the latest version.**
+- **pip is installed** (Python package manager)
 
 To verify:
 ```
@@ -108,4 +108,5 @@ By participating, you agree to uphold these values to ensure a positive, respect
 
 This project is licensed under the MIT License — 
 see the [MIT License](LICENSE) file for details.
+
 ---
