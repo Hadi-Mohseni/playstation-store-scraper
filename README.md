@@ -5,6 +5,8 @@
 <div align='center'>
 ## Playstation Store Scrapper 
 
+---
+
 A web scraper for the PlayStation Store that retrieves and lists all available games with details such as title, price, platform, and more.
 </div>
 
@@ -42,17 +44,17 @@ Before installing, make sure you have:
 - **pip is installed** (Python package manager)
 
 To verify:
-```
+```bash
 python --version
 pip --version
 ```
 ### Installation
 Install the package directly from PyPI using:
-```
+```bash
 pip install playstation-store-scraper
 ```
 If you’d like to use the latest development version:
-```
+```bash
 git clone https://github.com/Hadi-Mohseni/playstation-store-scrapper.git
 cd playstation-store-scrapper
 pip install .
@@ -64,7 +66,7 @@ pip install .
 
 Use `scraper.list_games()` to retrieve a group/page of games for a specific region.
 
-```
+```python
 from playstation_store_scraper import scraper
 from playstation_store_scraper.scraper import region
 
@@ -79,7 +81,7 @@ This returns a list of available games with metadata such as:
 
 
 Use scraper.retrieve_game() to fetch complete details about a specific game using its Concept ID.
-```
+```python
 from playstation_store_scraper import scraper
 from playstation_store_scraper.scraper import region
 
