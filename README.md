@@ -83,9 +83,9 @@ This returns a list of available games with metadata such as:
 Use scraper.retrieve_game() to fetch complete details about a specific game using its Concept ID.
 ```python
 from playstation_store_scraper import scraper
-from playstation_store_scraper.scraper import region
+from playstation_store_scraper.scraper import REGION
 
-scraper.retrieve_game(concept_id="10011898", region=region.TURKEY_ENGLISH)
+scraper.retrieve_game(concept_id="10011898", REGION=REGION.TURKEY_ENGLISH)
 ```
 
 Note : You can get a game's concept_id from the results of scraper.list_games().
