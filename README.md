@@ -3,9 +3,8 @@
 
 <hr>
 <div align='center'>
-## Playstation Store Scrapper 
 
----
+# Playstation Store Scrapper 
 
 A web scraper for the PlayStation Store that retrieves and lists all available games with details such as title, price, platform, and more.
 </div>
